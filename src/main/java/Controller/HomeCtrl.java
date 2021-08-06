@@ -1,3 +1,7 @@
+package Controller;
+
+import Models.User;
+
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -19,6 +23,9 @@ public class HomeCtrl extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 //        super.doGet(req, resp);
+        User x = new User();
+        x.setUsername("Dau Moe");
+        req.setAttribute("model", x);
         RequestDispatcher rd = req.getRequestDispatcher("Views/homepage.jsp");
         rd.forward(req, resp);
     }

@@ -12,5 +12,6 @@
 </head>
 <body>
     <h1>Hello, this is homepage!</h1>
+    <p>And hi, Iam ${model.username}</p>
 </body>
 </html>
