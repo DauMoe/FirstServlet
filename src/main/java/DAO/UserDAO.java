@@ -1,6 +1,7 @@
 package DAO;
 
 import Models.User;
+import org.json.JSONObject;
 
 import java.sql.*;
 
@@ -20,20 +21,18 @@ public class UserDAO {
     public void CreateTable() {
         Statement       stmt    = null;
         Connection      con     = null;
-        System.out.println("======= CONSTRUCTOR OUT =======");
         try  {
-            System.out.println("======= CONSTRUCTOR IN =======");
             Class.forName(DB_DRIVER);
-            con     = DriverManager.getConnection(DB_URL, USER, PASS);
+                        con     = DriverManager.getConnection(DB_URL, USER, PASS);
             String      sSql    = "CREATE TABLE IF NOT EXISTS users (" +
-                    "id         INT AUTO_INCREMENT PRIMARY KEY," +
-                    "email      varchar(255) NOT NULL UNIQUE," +
-                    "username   varchar(255)," +
-                    "password   varchar(255)," +
-                    "dob        varchar(255)," +
-                    "sex        varchar(255)," +
-                    "roles      int(10)" +
-                    ")";
+                                    "id         INT AUTO_INCREMENT PRIMARY KEY," +
+                                    "email      varchar(255) NOT NULL UNIQUE," +
+                                    "username   varchar(255)," +
+                                    "password   varchar(255)," +
+                                    "dob        varchar(255)," +
+                                    "sex        varchar(255)," +
+                                    "roles      int(10)" +
+                                    ")";
             if (con != null) {
                 stmt            = con.createStatement();
                 stmt.executeUpdate(sSql);
@@ -86,26 +85,26 @@ public class UserDAO {
         return false;
     }
 
-    public User getAUser(String email, String password) {
-        String              sSql        = "SELECT id, username, password, signature FROM users WHERE email = ? LIMIT 1";
+    public JSONObject getAUser(String email) {
+        String              sSql        = "SELECT id, username, password FROM users WHERE email = ? LIMIT 1";
         Connection          connection  = null;
         PreparedStatement   stmt        = null;
         ResultSet           res         = null;
+        JSONObject          g           = new JSONObject();
         try {
             connection = getConnection();
             if (connection != null) {
                 stmt    = connection.prepareStatement(sSql);
                 stmt.setString(1, email);
-                System.out.println(sSql);
                 res     = stmt.executeQuery();
                 while (res.next()) {
                     User x = new User();
                     x.setId(res.getInt("id"));
                     x.setUsername(res.getString("username"));
                     x.setPassword(res.getString("password"));
-                    x.setSecreteKey(res.getString("secretKey"));
-                    x.setPublicKey(res.getString("publicKey"));
-                    return x;
+                    g.put("isErr", false);
+                    g.put("msg", x);
+                    return g;
                 }
             }
         } catch (ClassNotFoundException | SQLException e) {
@@ -119,6 +118,8 @@ public class UserDAO {
                 throwables.printStackTrace();
             }
         }
-        return null;
+        g.put("isErr", true);
+        g.put("msg", "User is not existed");
+        return g;
     }
 }
